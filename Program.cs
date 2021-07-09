@@ -12,7 +12,7 @@ namespace Project3D
     {
         private static void Main(string[] args)
         {
-            Node node = LoadModel("triangulated_torus.fbx");
+            Node node = LoadModel("EnchLeader.fbx");
 
             Prefab prefab = new Prefab("3d-testing", PrefabType.Misc_1);
             List<PrefabObject> prefabObjects = new List<PrefabObject>();
@@ -29,7 +29,9 @@ namespace Project3D
 
             Vector3[] theme = new Vector3[]
             {
-
+                new Vector3(0.947307f, 0.028426f, 0.119539f),
+                Vector3.One,
+                new Vector3(0.024158f, 0.026241f, 0.025187f)
             };
 
             Renderer renderer = new Renderer(node, theme, transform);
@@ -68,25 +70,37 @@ namespace Project3D
 
             if (node.HasMeshes)
             {
-                Mesh mesh = scene.Meshes[node.MeshIndices[0]];
-
-                Vertex[] vertices = new Vertex[mesh.VertexCount];
-                int[] indices = mesh.GetIndices();
-
-                for (int i = 0; i < vertices.Length; i++)
+                foreach (int meshIndex in node.MeshIndices)
                 {
-                    Vector3D vertex = mesh.Vertices[i];
-                    Vector3D normal = mesh.Normals[i];
+                    //multiple meshes per node
+                    Node mNode = new Node();
+                    Mesh mesh = scene.Meshes[meshIndex];
 
-                    vertices[i] = new Vertex
+                    Vertex[] vertices = new Vertex[mesh.VertexCount];
+                    int[] indices = mesh.GetIndices();
+
+                    for (int i = 0; i < vertices.Length; i++)
                     {
-                        Position = new Vector3(vertex.X, vertex.Y, vertex.Z),
-                        Normal = new Vector3(normal.X, normal.Y, normal.Z)
-                    };
-                }
+                        Vector3D vertex = mesh.Vertices[i];
+                        Vector3D normal = mesh.Normals[i];
 
-                pNode.Vertices = vertices;
-                pNode.Indices = indices;
+                        vertices[i] = new Vertex
+                        {
+                            Position = new Vector3(vertex.X, vertex.Y, vertex.Z),
+                            Normal = new Vector3(normal.X, normal.Y, normal.Z)
+                        };
+                    }
+
+                    mNode.Vertices = vertices;
+                    mNode.Indices = indices;
+
+                    Material material = scene.Materials[mesh.MaterialIndex];
+
+                    mNode.Color = new Vector3(material.ColorDiffuse.R, material.ColorDiffuse.G, material.ColorDiffuse.B);
+
+                    //add node mesh as child
+                    pNode.Children.Add(mNode);
+                }
             }
 
             foreach (Assimp.Node child in node.Children)
