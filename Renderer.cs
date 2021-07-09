@@ -189,7 +189,7 @@ namespace Project3D
 
         private int GetIntDepth(float depthFloat)
         {
-            return (int)(depthFloat * 20f);
+            return (int)(depthFloat * 50f);
         }
 
         private int GetThemeColorIndex(Vector3 color)
