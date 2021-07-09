@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using PAPrefabToolkit.Data;
+using System;
 using System.Collections.Generic;
 
 namespace Project3D
@@ -9,12 +10,17 @@ namespace Project3D
         private Node _rootNode;
         private PrefabObject _transformObj;
 
+        private Vector3[] _theme;
+
         private Matrix4 _view = Matrix4.CreateTranslation(0f, 0f, -4f);
         private Matrix4 _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(60f), 16f / 9f, 2.5f, 5.5f);
 
-        public Renderer(Node rootNode, PrefabObject transformObj)
+        private Vector3 _lightDir = Vector3.Normalize(new Vector3(-1f, -0.5f, -0.5f));
+
+        public Renderer(Node rootNode, Vector3[] theme, PrefabObject transformObj)
         {
             _rootNode = rootNode;
+            _theme = theme;
             _transformObj = transformObj;
         }
 
@@ -39,7 +45,8 @@ namespace Project3D
                 {
                     Model = model,
                     ModelViewProjection = model * _view * _projection,
-                    LightDirection = new Vector3(-1f, -0.5f, -0.5f).Normalized()
+                    LightDirection = _lightDir,
+                    Color = node.Color
                 };
             
                 ProcessedTriangle[] triangles = RenderGeometry(node.Vertices, node.Indices, vsIn);
@@ -140,7 +147,7 @@ namespace Project3D
 
                 //calculate averages
                 float avgDepth = (ssPos1.Z + ssPos2.Z + ssPos3.Z) / 3f;
-                float avgBrightness = (vsOut1.Brightness + vsOut2.Brightness + vsOut3.Brightness) / 3f;
+                Vector3 avgColor = (vsOut1.Color + vsOut2.Color + vsOut3.Color) / 3f;
 
                 Triangle triangle = new Triangle(
                     new Vector2(ssPos1.X, ssPos1.Y),
@@ -154,7 +161,7 @@ namespace Project3D
                 rTri1.GetPositionScaleRotation(out var rPos1, out var sca1, out float rot1);
                 rTri2.GetPositionScaleRotation(out var rPos2, out var sca2, out float rot2);
 
-                int paCol = GetColorIndexFromBrightness(avgBrightness);
+                int paCol = GetThemeColorIndex(avgColor);
                 int paDepth = GetIntDepth(avgDepth);
 
                 int triIndexOffset = i * 2;
@@ -180,14 +187,28 @@ namespace Project3D
             return triangles;
         }
 
-        private int GetColorIndexFromBrightness(float brightness)
-        {
-            return (int)(brightness * 4f);
-        }
-
         private int GetIntDepth(float depthFloat)
         {
             return (int)(depthFloat * 20f);
+        }
+
+        private int GetThemeColorIndex(Vector3 color)
+        {
+            int index = 0;
+            float minDelta = 4f;
+
+            for (int i = 0; i < _theme.Length; i++)
+            {
+                float delta = MathF.Abs(_theme[i].X + _theme[i].Y + _theme[i].Z - color.X - color.Y - color.Z);
+
+                if (delta < minDelta)
+                {
+                    minDelta = delta;
+                    index = i;
+                }
+            }
+
+            return index;
         }
     }
 }

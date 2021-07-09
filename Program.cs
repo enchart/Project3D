@@ -12,7 +12,7 @@ namespace Project3D
     {
         private static void Main(string[] args)
         {
-            Node node = LoadModel("teapot.fbx");
+            Node node = LoadModel("triangulated_torus.fbx");
 
             Prefab prefab = new Prefab("3d-testing", PrefabType.Misc_1);
             List<PrefabObject> prefabObjects = new List<PrefabObject>();
@@ -27,7 +27,12 @@ namespace Project3D
                 Value = new System.Numerics.Vector2(71.1111111111f, 40f)
             });
 
-            Renderer renderer = new Renderer(node, transform);
+            Vector3[] theme = new Vector3[]
+            {
+
+            };
+
+            Renderer renderer = new Renderer(node, theme, transform);
 
             renderer.Render(prefab, prefabObjects, 0f, true);
             for (int i = 0; i < 240; i++)
@@ -36,6 +41,8 @@ namespace Project3D
 
                 node.Rotation = OpenTK.Mathematics.Quaternion.FromAxisAngle(Vector3.UnitY, MathF.Sin(time) * 0.5f);
                 renderer.Render(prefab, prefabObjects, time, false);
+
+                Console.WriteLine("rendering frame " + i);
             }
 
             File.WriteAllText("3d-testing.lsp", PrefabBuilder.BuildPrefab(prefab));
