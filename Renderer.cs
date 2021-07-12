@@ -24,10 +24,10 @@ namespace Project3D
             _transformObj = transformObj;
         }
 
-        public void Render(Prefab prefab, List<PrefabObject> objects, float time, bool createObjects)
+        public void Render(Prefab prefab, List<PrefabObject> objects, float time)
         {
             int index = 0;
-            RecursivelyRenderScene(prefab, _rootNode, Matrix4.Identity, objects, time, createObjects, ref index);
+            RecursivelyRenderScene(prefab, _rootNode, Matrix4.Identity, objects, time, objects.Count == 0, ref index);
         }
 
         private void RecursivelyRenderScene(Prefab prefab, Node node, Matrix4 parentTransform, List<PrefabObject> objects, float time, bool createNew, ref int index)
@@ -189,7 +189,7 @@ namespace Project3D
 
         private int GetIntDepth(float depthFloat)
         {
-            return (int)(depthFloat * 50f);
+            return (int)(depthFloat * 64f);
         }
 
         private int GetThemeColorIndex(Vector3 color)

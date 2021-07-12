@@ -15,10 +15,15 @@ namespace Project3D
         {
             Node node;
 
-            using (AssetImporter importer = new AssetImporter("EnchLeader-animated.fbx"))
+            using (AssetImporter importer = new AssetImporter("Ench-animated.dae"))
             {
                 node = importer.LoadModel();
             }
+
+            node.Scale = new Vector3(0.35f);
+
+            Quaternion origRot = node.Rotation;
+            node.Rotation = Quaternion.FromAxisAngle(Vector3.UnitY, 0.4f) * origRot;
 
             Prefab prefab = new Prefab("3d-testing", PrefabType.Misc_1);
 
@@ -34,20 +39,20 @@ namespace Project3D
 
             Vector3[] theme = new Vector3[]
             {
-                new Vector3(0.947307f, 0.028426f, 0.119539f),
-                Vector3.One,
-                new Vector3(0.024158f, 0.026241f, 0.025187f)
+                new Vector3(0.48515f, 0.715694f, 0.737911f),
+                new Vector3(0.024f, 0.026f, 0.025f),
+                new Vector3(1f, 1f, 1f),
+                new Vector3(1f, 0.022f, 0.117f)
             };
 
             Renderer renderer = new Renderer(node, theme, transform);
 
-            renderer.Render(prefab, prefabObjects, 0f, true);
-            for (int i = 0; i < 240; i++)
+            for (int i = 0; i < 48; i++)
             {
                 float time = i / 24f;
                 
                 RecursivelyUpdateAnimation(time, node);
-                renderer.Render(prefab, prefabObjects, time, false);
+                renderer.Render(prefab, prefabObjects, time);
 
                 Console.WriteLine("rendering frame " + i);
             }

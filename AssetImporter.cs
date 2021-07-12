@@ -7,9 +7,15 @@ namespace Project3D
 {
     public class AssetImporter : IDisposable
     {
+        public struct AnimChannelPair
+        {
+            public Animation Animation;
+            public NodeAnimationChannel Channel;
+        }
+
         private string _path;
 
-        private Dictionary<string, Animation> _animLookup = new Dictionary<string, Animation>();
+        private Dictionary<string, AnimChannelPair> _animLookup = new Dictionary<string, AnimChannelPair>();
 
         private AssimpContext _context;
         private Scene _scene;
@@ -29,7 +35,14 @@ namespace Project3D
             {
                 if (anim.HasNodeAnimations)
                 {
-                    _animLookup.Add(anim.NodeAnimationChannels[0].NodeName, anim);
+                    foreach (NodeAnimationChannel channel in anim.NodeAnimationChannels) 
+                    {
+                        _animLookup.TryAdd(channel.NodeName, new AnimChannelPair
+                        {
+                            Animation = anim,
+                            Channel = channel
+                        });
+                    }
                 }
             }
 
@@ -46,9 +59,10 @@ namespace Project3D
             pNode.Rotation = new OpenTK.Mathematics.Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
 
             //convert assimp animations
-            if (_animLookup.TryGetValue(node.Name, out Animation animation))
+            if (_animLookup.TryGetValue(node.Name, out AnimChannelPair animChannelPair))
             {
-                NodeAnimationChannel animationChannel = animation.NodeAnimationChannels[0];
+                Animation animation = animChannelPair.Animation;
+                NodeAnimationChannel animationChannel = animChannelPair.Channel;
 
                 if (animationChannel.HasPositionKeys)
                 {
