@@ -3,7 +3,11 @@ using PAPrefabToolkit;
 using PAPrefabToolkit.Data;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Threading;
+using Assimp;
+using Quaternion = OpenTK.Mathematics.Quaternion;
 
 namespace Project3D
 {
@@ -13,19 +17,18 @@ namespace Project3D
 
         private static void Main(string[] args)
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            
             Node node;
+            Node camera;
 
-            using (AssetImporter importer = new AssetImporter("Ench-animated.dae"))
+            using (AssetImporter importer = new AssetImporter("polygon.dae"))
             {
                 node = importer.LoadModel();
+                camera = importer.GetCamera();
             }
 
-            node.Scale = new Vector3(0.35f);
-
-            Quaternion origRot = node.Rotation;
-            node.Rotation = Quaternion.FromAxisAngle(Vector3.UnitY, 0.4f) * origRot;
-
-            Prefab prefab = new Prefab("3d-testing", PrefabType.Misc_1);
+            Prefab prefab = new Prefab("polygon", PrefabType.Misc_1);
 
             PrefabObject transform = new PrefabObject(prefab, "Transform")
             {
@@ -39,25 +42,30 @@ namespace Project3D
 
             Vector3[] theme = new Vector3[]
             {
-                new Vector3(0.48515f, 0.715694f, 0.737911f),
-                new Vector3(0.024f, 0.026f, 0.025f),
-                new Vector3(1f, 1f, 1f),
-                new Vector3(1f, 0.022f, 0.117f)
+                new Vector3(0f, 0f, 0f),
+                new Vector3(0.125f, 0.125f, 0.125f),
+                new Vector3(0.25f, 0.25f, 0.25f),
+                new Vector3(0.375f, 0.375f, 0.375f),
+                new Vector3(0.5f, 0.5f, 0.5f),
+                new Vector3(0.625f, 0.625f, 0.625f),
+                new Vector3(0.75f, 0.75f, 0.75f),
+                new Vector3(0.875f, 0.875f, 0.75f),
+                new Vector3(1f, 1f, 1f)
             };
 
             Renderer renderer = new Renderer(node, theme, transform);
 
-            for (int i = 0; i < 48; i++)
+            for (int i = 0; i < 140; i++)
             {
                 float time = i / 24f;
                 
                 RecursivelyUpdateAnimation(time, node);
-                renderer.Render(prefab, prefabObjects, time);
+                renderer.Render(prefab, prefabObjects, time, camera);
 
                 Console.WriteLine("rendering frame " + i);
             }
 
-            File.WriteAllText("3d-testing.lsp", PrefabBuilder.BuildPrefab(prefab));
+            File.WriteAllText("polygon.lsp", PrefabBuilder.BuildPrefab(prefab));
         }
 
         private static void RecursivelyUpdateAnimation(float time, Node node)

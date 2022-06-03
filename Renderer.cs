@@ -13,7 +13,7 @@ namespace Project3D
         private Vector3[] _theme;
 
         private Matrix4 _view = Matrix4.CreateTranslation(0f, 0f, -4f);
-        private Matrix4 _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(60f), 16f / 9f, 2.5f, 5.5f);
+        private Matrix4 _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(41.3f), 16f / 9f, 1.26f, 3.54f);
 
         private Vector3 _lightDir = Vector3.Normalize(new Vector3(-1f, -0.5f, -0.5f));
 
@@ -24,27 +24,37 @@ namespace Project3D
             _transformObj = transformObj;
         }
 
-        public void Render(Prefab prefab, List<PrefabObject> objects, float time)
+        public void Render(Prefab prefab, List<PrefabObject> objects, float time, Node camera)
         {
+            TransformSceneRecursively(_rootNode, Matrix4.Identity);
+            _view = Matrix4.Invert(camera.Model);
             int index = 0;
             RecursivelyRenderScene(prefab, _rootNode, Matrix4.Identity, objects, time, objects.Count == 0, ref index);
+        }
+        
+        private void TransformSceneRecursively(Node node,Matrix4 parent)
+        {
+            Matrix4 local=
+                Matrix4.CreateScale(node.Scale) *
+                Matrix4.CreateFromQuaternion(node.Rotation) *
+                Matrix4.CreateTranslation(node.Position);
+            
+            node.Model = local * parent;
+            
+            foreach (Node child in node.Children)
+            {
+                TransformSceneRecursively(child, node.Model);
+            }
         }
 
         private void RecursivelyRenderScene(Prefab prefab, Node node, Matrix4 parentTransform, List<PrefabObject> objects, float time, bool createNew, ref int index)
         {
-            Matrix4 local =
-                Matrix4.CreateScale(node.Scale) *
-                Matrix4.CreateFromQuaternion(node.Rotation) *
-                Matrix4.CreateTranslation(node.Position);
-
-            Matrix4 model = local * parentTransform;
-
             if (node.Vertices != null && node.Indices != null)
             {
                 VertexInData vsIn = new VertexInData
                 {
-                    Model = model,
-                    ModelViewProjection = model * _view * _projection,
+                    Model = node.Model,
+                    ModelViewProjection = node.Model * _view * _projection,
                     LightDirection = _lightDir,
                     Color = node.Color
                 };
@@ -113,7 +123,7 @@ namespace Project3D
             }
 
             foreach (Node child in node.Children)
-                RecursivelyRenderScene(prefab, child, model, objects, time, createNew, ref index);
+                RecursivelyRenderScene(prefab, child, node.Model, objects, time, createNew, ref index);
         }
 
         private ProcessedTriangle[] RenderGeometry(Vertex[] vertices, int[] indices, VertexInData shaderData)
@@ -199,7 +209,7 @@ namespace Project3D
 
             for (int i = 0; i < _theme.Length; i++)
             {
-                float delta = MathF.Abs(_theme[i].X + _theme[i].Y + _theme[i].Z - color.X - color.Y - color.Z);
+                float delta = DiffColor(_theme[i], color);
 
                 if (delta < minDelta)
                 {
@@ -209,6 +219,11 @@ namespace Project3D
             }
 
             return index;
+        }
+        
+        private float DiffColor(Vector3 a, Vector3 b)
+        {
+            return MathF.Max(MathF.Abs(a.X - b.X), Math.Max(MathF.Abs(a.Y - b.Y), MathF.Abs(a.Z - b.Z)));
         }
     }
 }
