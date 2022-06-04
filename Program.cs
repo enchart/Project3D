@@ -37,7 +37,7 @@ namespace Project3D
                 Value = new System.Numerics.Vector2(71.1111111111f, 40f)
             });
 
-            Vector3[] theme = new Vector3[]
+            Vector3d[] theme = new Vector3d[]
             {
                 new Vector3(0.48515f, 0.715694f, 0.737911f),
                 new Vector3(0.024f, 0.026f, 0.025f),
@@ -49,7 +49,7 @@ namespace Project3D
 
             for (int i = 0; i < 48; i++)
             {
-                float time = i / 24f;
+                double time = i / 24d;
                 
                 RecursivelyUpdateAnimation(time, node);
                 renderer.Render(prefab, prefabObjects, time);
@@ -60,7 +60,7 @@ namespace Project3D
             File.WriteAllText("3d-testing.lsp", PrefabBuilder.BuildPrefab(prefab));
         }
 
-        private static void RecursivelyUpdateAnimation(float time, Node node)
+        private static void RecursivelyUpdateAnimation(double time, Node node)
         {
             if (node.PositionSequence != null)
             {

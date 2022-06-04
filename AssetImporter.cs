@@ -54,9 +54,16 @@ namespace Project3D
             node.Transform.Decompose(out var scale, out var rotation, out var translation);
 
             Node pNode = new Node();
+<<<<<<< Updated upstream
             pNode.Position = new Vector3(translation.X, translation.Y, translation.Z);
             pNode.Scale = new Vector3(scale.X, scale.Y, scale.Z);
             pNode.Rotation = new OpenTK.Mathematics.Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
+=======
+            pNode.Position = new Vector3d(translation.X, translation.Y, translation.Z);
+            pNode.Scale = new Vector3d(scale.X, scale.Y, scale.Z);
+            pNode.Rotation = new OpenTK.Mathematics.Quaterniond(rotation.X, rotation.Y, rotation.Z, rotation.W);
+            pNode.Name = node.Name;
+>>>>>>> Stashed changes
 
             //convert assimp animations
             if (_animLookup.TryGetValue(node.Name, out AnimChannelPair animChannelPair))
@@ -66,56 +73,56 @@ namespace Project3D
 
                 if (animationChannel.HasPositionKeys)
                 {
-                    Keyframe<Vector3>[] keyframes = new Keyframe<Vector3>[animationChannel.PositionKeyCount];
+                    Keyframe<Vector3d>[] keyframes = new Keyframe<Vector3d>[animationChannel.PositionKeyCount];
 
                     List<VectorKey> posKeys = animationChannel.PositionKeys;
 
                     for (int i = 0; i < keyframes.Length; i++)
                     {
-                        keyframes[i] = new Keyframe<Vector3>()
+                        keyframes[i] = new Keyframe<Vector3d>()
                         {
-                            Time = (float)posKeys[i].Time / (float)animation.TicksPerSecond,
-                            Value = new Vector3(posKeys[i].Value.X, posKeys[i].Value.Y, posKeys[i].Value.Z)
+                            Time = posKeys[i].Time / animation.TicksPerSecond,
+                            Value = new Vector3d(posKeys[i].Value.X, posKeys[i].Value.Y, posKeys[i].Value.Z)
                         };
                     }
 
-                    pNode.PositionSequence = new Vector3Sequence(keyframes);
+                    pNode.PositionSequence = new Vector3dSequence(keyframes);
                 }
 
                 if (animationChannel.HasScalingKeys)
                 {
-                    Keyframe<Vector3>[] keyframes = new Keyframe<Vector3>[animationChannel.ScalingKeyCount];
+                    Keyframe<Vector3d>[] keyframes = new Keyframe<Vector3d>[animationChannel.ScalingKeyCount];
 
                     List<VectorKey> scaKeys = animationChannel.ScalingKeys;
 
                     for (int i = 0; i < keyframes.Length; i++)
                     {
-                        keyframes[i] = new Keyframe<Vector3>()
+                        keyframes[i] = new Keyframe<Vector3d>()
                         {
-                            Time = (float)scaKeys[i].Time / (float)animation.TicksPerSecond,
-                            Value = new Vector3(scaKeys[i].Value.X, scaKeys[i].Value.Y, scaKeys[i].Value.Z)
+                            Time = scaKeys[i].Time / animation.TicksPerSecond,
+                            Value = new Vector3d(scaKeys[i].Value.X, scaKeys[i].Value.Y, scaKeys[i].Value.Z)
                         };
                     }
 
-                    pNode.ScaleSequence = new Vector3Sequence(keyframes);
+                    pNode.ScaleSequence = new Vector3dSequence(keyframes);
                 }
 
                 if (animationChannel.HasRotationKeys)
                 {
-                    Keyframe<OpenTK.Mathematics.Quaternion>[] keyframes = new Keyframe<OpenTK.Mathematics.Quaternion>[animationChannel.RotationKeyCount];
+                    Keyframe<OpenTK.Mathematics.Quaterniond>[] keyframes = new Keyframe<OpenTK.Mathematics.Quaterniond>[animationChannel.RotationKeyCount];
 
                     List<QuaternionKey> rotKeys = animationChannel.RotationKeys;
 
                     for (int i = 0; i < keyframes.Length; i++)
                     {
-                        keyframes[i] = new Keyframe<OpenTK.Mathematics.Quaternion>()
+                        keyframes[i] = new Keyframe<OpenTK.Mathematics.Quaterniond>()
                         {
-                            Time = (float)rotKeys[i].Time / (float)animation.TicksPerSecond,
-                            Value = new OpenTK.Mathematics.Quaternion(rotKeys[i].Value.X, rotKeys[i].Value.Y, rotKeys[i].Value.Z, rotKeys[i].Value.W)
+                            Time = rotKeys[i].Time / animation.TicksPerSecond,
+                            Value = new OpenTK.Mathematics.Quaterniond(rotKeys[i].Value.X, rotKeys[i].Value.Y, rotKeys[i].Value.Z, rotKeys[i].Value.W)
                         };
                     }
 
-                    pNode.RotationSequence = new QuaternionSequence(keyframes);
+                    pNode.RotationSequence = new QuaterniondSequence(keyframes);
                 }
             }
 
@@ -127,7 +134,7 @@ namespace Project3D
                     Node mNode = new Node();
                     Mesh mesh = _scene.Meshes[meshIndex];
 
-                    Vertex[] vertices = new Vertex[mesh.VertexCount];
+                    Vertexd[] vertices = new Vertexd[mesh.VertexCount];
                     int[] indices = mesh.GetIndices();
 
                     for (int i = 0; i < vertices.Length; i++)
@@ -135,10 +142,10 @@ namespace Project3D
                         Vector3D vertex = mesh.Vertices[i];
                         Vector3D normal = mesh.Normals[i];
 
-                        vertices[i] = new Vertex
+                        vertices[i] = new Vertexd
                         {
-                            Position = new Vector3(vertex.X, vertex.Y, vertex.Z),
-                            Normal = new Vector3(normal.X, normal.Y, normal.Z)
+                            Position = new Vector3d(vertex.X, vertex.Y, vertex.Z),
+                            Normal = new Vector3d(normal.X, normal.Y, normal.Z)
                         };
                     }
 
@@ -147,7 +154,7 @@ namespace Project3D
 
                     Material material = _scene.Materials[mesh.MaterialIndex];
 
-                    mNode.Color = new Vector3(material.ColorDiffuse.R, material.ColorDiffuse.G, material.ColorDiffuse.B);
+                    mNode.Color = new Vector3d(material.ColorDiffuse.R, material.ColorDiffuse.G, material.ColorDiffuse.B);
 
                     //add node mesh as child
                     pNode.Children.Add(mNode);

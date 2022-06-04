@@ -2,7 +2,7 @@
 {
     public struct Keyframe<T> where T : struct
     {
-        public float Time;
+        public double Time;
         public T Value;
     }
 }

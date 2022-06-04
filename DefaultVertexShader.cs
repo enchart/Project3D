@@ -4,16 +4,16 @@ namespace Project3D
 {
     public class DefaultVertexShader : VertexShader
     {
-        public DefaultVertexShader(Vertex vertex, VertexInData vertexIn) : base(vertex, vertexIn)
+        public DefaultVertexShader(Vertexd vertexd, VertexdInData vertexdIn) : base(vertexd, vertexdIn)
         {
         }
 
-        public override VertexOutData ProcessVertex()
+        public override VertexdOutData ProcessVertex()
         {
-            return new VertexOutData
+            return new VertexdOutData
             {
-                Position = new Vector4(Vertex.Position, 1f) * VertexIn.ModelViewProjection,
-                Color = VertexIn.Color
+                Position = new Vector4d(Vertexd.Position, 1f) * VertexdIn.ModelViewProjection,
+                Color = VertexdIn.Color
             };
         }
     }

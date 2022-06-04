@@ -2,15 +2,15 @@
 {
     public abstract class VertexShader
     {
-        protected Vertex Vertex;
-        protected VertexInData VertexIn;
+        protected Vertexd Vertexd;
+        protected VertexdInData VertexdIn;
         
-        public VertexShader(Vertex vertex, VertexInData vertexIn)
+        public VertexShader(Vertexd vertexd, VertexdInData vertexdIn)
         {
-            Vertex = vertex;
-            VertexIn = vertexIn;
+            Vertexd = vertexd;
+            VertexdIn = vertexdIn;
         }
 
-        public abstract VertexOutData ProcessVertex();
+        public abstract VertexdOutData ProcessVertex();
     }
 }

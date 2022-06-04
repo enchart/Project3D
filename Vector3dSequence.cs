@@ -2,19 +2,19 @@
 
 namespace Project3D
 {
-    public class QuaternionSequence
+    public class Vector3dSequence
     {
-        private Keyframe<Quaternion>[] _keyframes;
+        private Keyframe<Vector3d>[] _keyframes;
 
-        private float lastTime;
+        private double lastTime;
         private int lastIndex;
 
-        public QuaternionSequence(Keyframe<Quaternion>[] keyframes)
+        public Vector3dSequence(Keyframe<Vector3d>[] keyframes)
         {
             _keyframes = keyframes;
         }
 
-        public Quaternion GetValue(float time)
+        public Vector3d GetValue(double time)
         {
             if (_keyframes.Length == 1)
             {
@@ -31,12 +31,12 @@ namespace Project3D
                 return _keyframes[_keyframes.Length - 1].Value;
             }
 
-            FindClosestPair(time, out Keyframe<Quaternion> start, out Keyframe<Quaternion> end);
+            FindClosestPair(time, out Keyframe<Vector3d> start, out Keyframe<Vector3d> end);
 
-            return Quaternion.Slerp(start.Value, end.Value, (time - start.Time) / (end.Time - start.Time));
+            return Vector3d.Lerp(start.Value, end.Value, (time - start.Time) / (end.Time - start.Time));
         }
 
-        private void FindClosestPair(float time, out Keyframe<Quaternion> start, out Keyframe<Quaternion> end)
+        private void FindClosestPair(double time, out Keyframe<Vector3d> start, out Keyframe<Vector3d> end)
         {
             if (time >= lastTime)
             {
