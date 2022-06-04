@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Threading.Channels;
 
 namespace Project3D
 {
@@ -19,6 +20,8 @@ namespace Project3D
 
         private AssimpContext _context;
         private Scene _scene;
+
+        private Node _rootNode;
 
         public AssetImporter(string path)
         {
@@ -46,7 +49,13 @@ namespace Project3D
                 }
             }
 
-            return ProcessNodeRecursively(_scene.RootNode);
+            _rootNode = ProcessNodeRecursively(_scene.RootNode);
+            return _rootNode;
+        }
+
+        public Node GetCamera()
+        {
+            return _rootNode.FindNode(_scene.Cameras[0].Name);
         }
 
         private Node ProcessNodeRecursively(Assimp.Node node)
@@ -54,16 +63,10 @@ namespace Project3D
             node.Transform.Decompose(out var scale, out var rotation, out var translation);
 
             Node pNode = new Node();
-<<<<<<< Updated upstream
-            pNode.Position = new Vector3(translation.X, translation.Y, translation.Z);
-            pNode.Scale = new Vector3(scale.X, scale.Y, scale.Z);
-            pNode.Rotation = new OpenTK.Mathematics.Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
-=======
             pNode.Position = new Vector3d(translation.X, translation.Y, translation.Z);
             pNode.Scale = new Vector3d(scale.X, scale.Y, scale.Z);
             pNode.Rotation = new OpenTK.Mathematics.Quaterniond(rotation.X, rotation.Y, rotation.Z, rotation.W);
             pNode.Name = node.Name;
->>>>>>> Stashed changes
 
             //convert assimp animations
             if (_animLookup.TryGetValue(node.Name, out AnimChannelPair animChannelPair))

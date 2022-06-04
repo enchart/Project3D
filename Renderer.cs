@@ -12,13 +12,8 @@ namespace Project3D
 
         private Vector3d[] _theme;
 
-<<<<<<< Updated upstream
-        private Matrix4 _view = Matrix4.CreateTranslation(0f, 0f, -4f);
-        private Matrix4 _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(60f), 16f / 9f, 2.5f, 5.5f);
-=======
         private Matrix4d _view = Matrix4d.CreateTranslation(0f, 0f, -4f);
         private Matrix4d _projection = Matrix4d.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(41.3), 16d / 9d, 1.26d, 3.54d);
->>>>>>> Stashed changes
 
         private Vector3d _lightDir = Vector3d.Normalize(new Vector3d(-1f, -0.5f, -0.5f));
 
@@ -29,30 +24,13 @@ namespace Project3D
             _transformObj = transformObj;
         }
 
-<<<<<<< Updated upstream
-        public void Render(Prefab prefab, List<PrefabObject> objects, float time)
-        {
-=======
         public void Render(Prefab prefab, List<PrefabObject> objects, double time, Node camera)
         {
             TransformSceneRecursively(_rootNode, Matrix4d.Identity);
             _view = Matrix4d.Invert(camera.Model);
->>>>>>> Stashed changes
             int index = 0;
             RecursivelyRenderScene(prefab, _rootNode, Matrix4d.Identity, objects, time, objects.Count == 0, ref index);
         }
-<<<<<<< Updated upstream
-
-        private void RecursivelyRenderScene(Prefab prefab, Node node, Matrix4 parentTransform, List<PrefabObject> objects, float time, bool createNew, ref int index)
-        {
-            Matrix4 local =
-                Matrix4.CreateScale(node.Scale) *
-                Matrix4.CreateFromQuaternion(node.Rotation) *
-                Matrix4.CreateTranslation(node.Position);
-
-            Matrix4 model = local * parentTransform;
-
-=======
         
         private void TransformSceneRecursively(Node node, Matrix4d parent)
         {
@@ -71,13 +49,12 @@ namespace Project3D
 
         private void RecursivelyRenderScene(Prefab prefab, Node node, Matrix4d parentTransform, List<PrefabObject> objects, double time, bool createNew, ref int index)
         {
->>>>>>> Stashed changes
             if (node.Vertices != null && node.Indices != null)
             {
                 VertexdInData vsIn = new VertexdInData
                 {
-                    Model = model,
-                    ModelViewProjection = model * _view * _projection,
+                    Model = node.Model,
+                    ModelViewProjection = node.Model * _view * _projection,
                     LightDirection = _lightDir,
                     Color = node.Color
                 };
@@ -146,7 +123,7 @@ namespace Project3D
             }
 
             foreach (Node child in node.Children)
-                RecursivelyRenderScene(prefab, child, model, objects, time, createNew, ref index);
+                RecursivelyRenderScene(prefab, child, node.Model, objects, time, createNew, ref index);
         }
 
         private ProcessedTriangle[] RenderGeometry(Vertexd[] vertices, int[] indices, VertexdInData shaderData)
@@ -232,11 +209,7 @@ namespace Project3D
 
             for (int i = 0; i < _theme.Length; i++)
             {
-<<<<<<< Updated upstream
-                float delta = MathF.Abs(_theme[i].X + _theme[i].Y + _theme[i].Z - color.X - color.Y - color.Z);
-=======
                 double delta = DiffColor(_theme[i], color);
->>>>>>> Stashed changes
 
                 if (delta < minDelta)
                 {
@@ -247,13 +220,10 @@ namespace Project3D
 
             return index;
         }
-<<<<<<< Updated upstream
-=======
         
         private double DiffColor(Vector3d a, Vector3d b)
         {
             return Math.Max(Math.Abs(a.X - b.X), Math.Max(Math.Abs(a.Y - b.Y), Math.Abs(a.Z - b.Z)));
         }
->>>>>>> Stashed changes
     }
 }
